@@ -11,8 +11,8 @@ export class UserController {
 
     @UseGuards(AuthGuard('jwt'))
     @Get('username')
-    getUserByUsername(@Param() param) {
-        return this.userService.getUserByUsername(param.username);
+    getUserByUsername(@Param('username') username: string) {
+        return this.userService.getUserByUsername(username);
     }
     @Post()
     registerUser(@Body() createUserDto: CreateUserDto) {

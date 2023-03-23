@@ -12,10 +12,8 @@ import {
 export class UserService {
     constructor(@InjectModel(User.name) private userModel: Model<UserDocument>, private hashService: HashService) { }
     async getUserByUsername(username: string) {
-        return this.userModel.findOne({
-            username
-        })
-            .exec();
+        const user = await this.userModel.findOne({ username }, { password: 0 }).exec();
+        return user
     }
     async registerUser(createUserDto: CreateUserDto) {
         // validate DTO
@@ -28,6 +26,12 @@ export class UserService {
         // Hash Password
         createUser.password = await this.hashService.hashPassword(createUser.password);
 
-        return createUser.save();
+        // Save the user
+        const savedUser = await createUser.save();
+
+        // Return the saved user without the password field
+        const { password, ...userWithoutPassword } = savedUser.toObject();
+        return userWithoutPassword;
+
     }
 }
